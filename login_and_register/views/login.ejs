@@ -1,0 +1,46 @@
+<%- include("partials/header.ejs",{page:"Login"}); %>
+
+    <body>
+        <section>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-8 col-lg-8 col-xl-6">
+                        <div class="row">
+                            <div class="col text-center title">
+                                <h1>LOG IN</h1>
+                            </div>
+                        </div>
+                        <form action="/login" method="POST">
+                            <div class="row align-items-center">
+                                <div class="col mt-4">
+                                    <input type="text" name="username" class="form-control" placeholder="Username">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-4">
+                                <div class="col">
+                                    <input type="password" name="password" class="form-control" placeholder="Password">
+                                </div>
+                            </div>
+                            <div class="row justify-content-start mt-1">
+                                <div class="col">
+                                    <span><button class="btn btn-primary mt-4">LOGIN</button></span>
+                                    <span>
+                                        <p>New around here? <a href="/register">Sing Up</a></p>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="alert alert-danger mt-3 <%= (()=> {
+                            if (err) {return " d-block"} else {return "d-none" } })() %>" role="alert">
+                            <%= (()=> {
+                                if (err) {return err}
+                                else {return ""}
+                                })() %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </body>
+
+    </html>
