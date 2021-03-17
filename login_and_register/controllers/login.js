@@ -1,4 +1,5 @@
 const User = require("../models/users");
+const bcrypt = require("bcrypt");
 
 const render_login = (req, res) => {
   res.render("login", { err: req.session.msg });
@@ -8,8 +9,6 @@ const postLogin = (req, res) => {
   console.log(req.body);
   User.findOne({ username: req.body.username }, (err, user) => {
     if (err) {
-      // if (err.stack.includes("CastError"))
-      //   return res.status(400).render("login", { err: err.reason.message });
       return res.status(500).render("login", { err: "Server error!!!" });
     }
     if (!user)
@@ -21,9 +20,10 @@ const postLogin = (req, res) => {
 
       if (!isMatch)
         return res.status(404).render("login", { err: "Wrong password!!!" });
-      // req.session.user = user;
+      req.session.data = user;
+      req.session.pass = req.body.password;
 
-      // res.status(200).render("dashboard",{user});
+      res.status(200).redirect("/dashboard");
     });
   });
 };

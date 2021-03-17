@@ -35,14 +35,22 @@ const postRegister = (req, res) => {
   const newUser = new User(req.body);
   newUser.save({}, (err) => {
     if (err) {
+      if (err.code === 11000) {
+        return res
+          .status(400)
+          .render("register", {
+            err: "This username has already been selected!!!",
+          });
+      }
+
       if (
         err.message.includes("username") ||
-        err.message.includes("password") ||
-        err.message.includes("email")
+        err.message.includes("password")
       ) {
         // req.session.err = err.message;
         return res.status(400).render("register", { err: err.message });
       }
+      return res.status(400).render("register", { err: "Bad request!!!" });
     }
 
     // req.session.err = undefined;
