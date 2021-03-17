@@ -44,6 +44,5 @@ const UserSchema = new mgs.Schema({
 });
 
 UserSchema.pre("save", hashPass);
-UserSchema.pre("findOneAndUpdate", hashPass);
 
 module.exports = mgs.model("User", UserSchema);

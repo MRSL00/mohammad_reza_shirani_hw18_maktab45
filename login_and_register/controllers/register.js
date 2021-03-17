@@ -14,6 +14,8 @@ const render_register = (req, res) => {
 };
 
 const postRegister = (req, res) => {
+  
+
   const bodyKeys = Object.keys(req.body);
   bodyKeys.pop();
   const checkFieldsResult = fieldsPattern.every((field) =>
@@ -21,7 +23,6 @@ const postRegister = (req, res) => {
   );
 
   if (!checkFieldsResult || bodyKeys.length !== 6) {
-    // req.session.err = "Bad request!!!";
     return res.status(400).render("register", { err: "Bad request!!!" });
   }
 
@@ -47,13 +48,12 @@ const postRegister = (req, res) => {
         err.message.includes("username") ||
         err.message.includes("password")
       ) {
-        // req.session.err = err.message;
+        
         return res.status(400).render("register", { err: err.message });
       }
       return res.status(400).render("register", { err: "Bad request!!!" });
     }
 
-    // req.session.err = undefined;
     res.status(200).redirect("/login");
   });
 };

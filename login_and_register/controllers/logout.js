@@ -1,8 +1,7 @@
-// const logout = (req, res) => {
-//   if (req.cookies.user_sid && req.session.data) {
-//     res.clearCookie("user_sid");
-//     res.redirect("/login")
-//   }
-// };
+const logout = (req, res) => {
+  req.session.destroy(function (err) {
+    res.redirect("/login");
+  });
+};
 
-// module.exports = { logout };
+module.exports = { logout };
