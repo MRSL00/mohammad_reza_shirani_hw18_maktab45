@@ -23,15 +23,9 @@ const postLogin = (req, res) => {
       if (!isMatch)
         return res.status(404).render("login", { err: "Wrong password!!!" });
 
-      req.session.user = {
-        username: user.username,
-        email: user.email,
-        country: user.country,
-        dob: user.dob,
-        gender: user.gender,
-      };
+      req.session.user = user;
 
-      console.log(req.session.user);
+      
 
       res.status(200).redirect("/dashboard");
     });

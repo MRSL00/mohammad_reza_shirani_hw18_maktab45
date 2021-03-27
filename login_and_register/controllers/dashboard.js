@@ -33,25 +33,28 @@ const postDashboard = (req, res) => {
     });
   }
 
-  User.findOne({ username: req.session.user.username }, (err, user) => {
-    if (err)
-      return res.status(500).render("dashboard", {
-        data: user,
-        succ: undefined,
-        err: "Server error!!!",
-      });
+  // User.findOne({ username: req.session.user.username }, (err, user) => {
+  //   if (err)
+  //     return res.status(500).render("dashboard", {
+  //       data: user,
+  //       succ: undefined,
+  //       err: "Server error!!!",
+  //     });
 
-    bcrypt.compare(req.body.password, user.password, function (err, isMatch) {
+  bcrypt.compare(
+    req.body.password,
+    req.session.user.password,
+    function (err, isMatch) {
       if (err)
         return res.status(500).render("dashboard", {
-          data: user,
+          data: req.session.user,
           succ: undefined,
           err: "Server error!!!",
         });
 
       if (!isMatch)
         return res.status(404).render("dashboard", {
-          data: user,
+          data: req.session.user,
           succ: undefined,
           err: "Wrong password!!!",
         });
@@ -64,54 +67,48 @@ const postDashboard = (req, res) => {
         });
       }
 
+      req.body.password = !req.body.newpassword
+        ? req.body.password
+        : req.body.newpassword;
+
       User.findOneAndUpdate(
-        { _id: user._id },
-        {
-          username: req.body.username,
-          email: req.body.email,
-          password: !req.body.newpassword
-            ? req.body.password
-            : req.body.newpassword,
-          country: req.body.country,
-          dob: req.body.dob,
-          gender: req.body.gender,
-        },
+        { _id: req.session.user._id },
+        req.body,
         { new: true },
         (err, userUpdate) => {
           if (err) {
-            if (
-              err.message.includes("username") ||
-              err.message.includes("password")
-            ) {
-              return res.status(400).render("dashboard", {
-                data: user,
-                succ: undefined,
-                err: err.message,
-              });
-            }
             return res.status(500).render("dashboard", {
               data: user,
               succ: undefined,
               err: err.message,
             });
           }
-          userUpdate.save();
-          req.session.user = {
-            username: userUpdate.username,
-            email: userUpdate.email,
-            country: userUpdate.country,
-            dob: userUpdate.dob,
-            gender: userUpdate.gender,
-          };
-          res.status(200).render("dashboard", {
-            data: req.session.user,
-            succ: "Update Successfuly :)",
-            err: undefined,
+          userUpdate.save(async (err) => {
+            if (err) {
+              await User.findOneAndUpdate(
+                { _id: req.session.user._id },
+                req.session.user,
+                { new: true }
+              );
+              return res.status(400).render("dashboard", {
+                data: req.session.user,
+                succ: undefined,
+                err: err.message,
+              });
+            }
+            req.session.user = userUpdate;
+
+            res.status(200).render("dashboard", {
+              data: req.session.user,
+              succ: "Update Successfuly :)",
+              err: undefined,
+            });
           });
         }
       );
-    });
-  });
+    }
+  );
+  // });
 };
 
 module.exports = { render_dashboard, postDashboard };
